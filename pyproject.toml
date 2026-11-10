@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "veilleprix"
+version = "1.0.0"
+description = "Veille tarifaire auto-hébergée : relève les prix, garde l'historique, alerte sur variation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Titouan Marty" }]
+keywords = ["price-monitoring", "scraping", "veille", "ecommerce", "self-hosted"]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Office/Business :: Financial",
+  "Topic :: Internet :: WWW/HTTP",
+]
+dependencies = []
+
+[project.optional-dependencies]
+# Couche d'extraction enrichie : JSON-LD, microdata, OpenGraph via extruct.
+extract = ["extruct>=0.17", "beautifulsoup4>=4.12", "lxml>=5"]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+veilleprix = "veilleprix:main"
+
+[project.urls]
+Homepage = "https://veilleprix.pages.dev"
+
+[tool.setuptools]
+py-modules = ["veilleprix"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
