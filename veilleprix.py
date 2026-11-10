@@ -466,7 +466,8 @@ def email_variation(watch, previous, price, currency):
                line-height:1.15;color:{INK};">{_esc(name)}</h1>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
       <tr>
-        <td style="padding:0 12px 0 0;font-family:'Courier New',monospace;font-size:22px;color:{INK2};text-decoration:line-through;">{_esc(fmt(previous, currency))}</td>
+        <td style="padding:0 12px 0 0;font-family:'Courier New',monospace;font-size:22px;
+                   color:{INK2};text-decoration:line-through;">{_esc(fmt(previous, currency))}</td>
         <td style="padding:0 12px;font-family:'Courier New',monospace;font-size:18px;color:{INK2};">→</td>
         <td style="font-family:'Courier New',monospace;font-size:26px;font-weight:700;color:{ACCENT};">{_esc(fmt(price, currency))}</td>
         <td align="right" style="font-family:'Courier New',monospace;font-size:14px;color:{ACCENT};">{arrow} {abs(pct):.1f} %</td>
