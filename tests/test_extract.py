@@ -10,7 +10,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import veilleprix as vp  # noqa: E402
 
-
 JSONLD_PAGE = """
 <html><head><title>Produit</title></head><body>
 <script type="application/ld+json">
@@ -132,7 +131,7 @@ def test_fmt_french():
 
 
 def test_is_due_respects_interval():
-    from datetime import datetime, timezone, timedelta
+    from datetime import datetime, timedelta, timezone
 
     now = datetime.now(timezone.utc)
     recent = {"interval_min": 60, "last_checked": (now - timedelta(minutes=5)).isoformat()}

@@ -27,7 +27,7 @@ import re
 import sqlite3
 import subprocess
 import sys
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -366,6 +366,18 @@ def _esc(text):
     )
 
 
+STYLE_BTN = (
+    "display:inline-block;padding:12px 22px;"
+    "font-family:'Courier New',monospace;font-size:11px;letter-spacing:1px;text-decoration:none;"
+)
+
+
+def _btn(url, label, color=INK, text_color=None):
+    """Bouton d'email : mêmes styles partout, couleur paramétrable."""
+    foreground = text_color or ("#ffffff" if color == ACCENT else PAPER)
+    return f'<a href="{_esc(url)}" style="{STYLE_BTN}background:{color};color:{foreground};">{label}</a>'
+
+
 def email_shell(preheader, body):
     """Enveloppe HTML sobre, compatible clients mail (tables + styles inline)."""
     return f"""<!DOCTYPE html>
@@ -376,7 +388,8 @@ def email_shell(preheader, body):
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">{_esc(preheader)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:{PAPER};padding:32px 16px;">
 <tr><td align="center">
-<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:560px;max-width:100%;background:#fffefb;border:1px solid {RULE};">
+<table role="presentation" width="560" cellpadding="0" cellspacing="0"
+       style="width:560px;max-width:100%;background:#fffefb;border:1px solid {RULE};">
   <tr><td style="padding:20px 28px;border-bottom:1px solid {INK};">
     <span style="font-family:Georgia,'Times New Roman',serif;font-size:19px;letter-spacing:-.3px;color:{INK};">Veille<b>Prix</b></span>
     <span style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:{ACCENT};vertical-align:super;">FR</span>
@@ -411,7 +424,8 @@ def email_activation(watch, price, currency):
     )
     body = f"""
     <p style="margin:0 0 10px;font-family:'Courier New',monospace;font-size:10px;letter-spacing:2px;color:{ACCENT};">VEILLE OUVERTE</p>
-    <h1 style="margin:0 0 14px;font-family:Georgia,serif;font-weight:400;font-size:28px;line-height:1.15;color:{INK};">Votre registre est ouvert.</h1>
+    <h1 style="margin:0 0 14px;font-family:Georgia,serif;font-weight:400;font-size:28px;
+               line-height:1.15;color:{INK};">Votre registre est ouvert.</h1>
     <p style="margin:0 0 22px;font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.6;color:{INK2};">
       {_esc(watch['label'] or watch['url'])} est désormais relevé toutes les heures. Voici le point de départ.
     </p>
@@ -422,7 +436,7 @@ def email_activation(watch, price, currency):
     <p style="margin:0 0 18px;font-family:Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:{INK2};">
       Vous recevrez un email à chaque variation, et un bordereau chaque matin.
     </p>
-    <a href="{_esc(watch['url'])}" style="display:inline-block;padding:12px 22px;background:{INK};color:{PAPER};font-family:'Courier New',monospace;font-size:11px;letter-spacing:1px;text-decoration:none;">VOIR LA PAGE</a>
+    {_btn(watch['url'], 'VOIR LA PAGE')}
     """
     return subject, text, email_shell(f"{fmt(price, currency)} — veille active", body)
 
@@ -446,8 +460,10 @@ def email_variation(watch, previous, price, currency):
             f"Objectif atteint : le prix passe sous {fmt(watch['target'], currency)}.</p>"
         )
     body = f"""
-    <p style="margin:0 0 10px;font-family:'Courier New',monospace;font-size:10px;letter-spacing:2px;color:{ACCENT};">{_esc(mouvement.upper())} DÉTECTÉE</p>
-    <h1 style="margin:0 0 18px;font-family:Georgia,serif;font-weight:400;font-size:28px;line-height:1.15;color:{INK};">{_esc(name)}</h1>
+    <p style="margin:0 0 10px;font-family:'Courier New',monospace;font-size:10px;
+              letter-spacing:2px;color:{ACCENT};">{_esc(mouvement.upper())} DÉTECTÉE</p>
+    <h1 style="margin:0 0 18px;font-family:Georgia,serif;font-weight:400;font-size:28px;
+               line-height:1.15;color:{INK};">{_esc(name)}</h1>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
       <tr>
         <td style="padding:0 12px 0 0;font-family:'Courier New',monospace;font-size:22px;color:{INK2};text-decoration:line-through;">{_esc(fmt(previous, currency))}</td>
@@ -462,7 +478,7 @@ def email_variation(watch, previous, price, currency):
       {_price_row('Écart', f"{'+' if delta>0 else '−'}{fmt(abs(delta), currency)}")}
     </table>
     {target_line}
-    <a href="{_esc(watch['url'])}" style="display:inline-block;padding:12px 22px;background:{ACCENT};color:#ffffff;font-family:'Courier New',monospace;font-size:11px;letter-spacing:1px;text-decoration:none;">OUVRIR LA PAGE</a>
+    {_btn(watch['url'], 'OUVRIR LA PAGE', ACCENT)}
     """
     return subject, text, email_shell(f"{fmt(previous, currency)} → {fmt(price, currency)}", body)
 
@@ -481,7 +497,7 @@ def email_failure(watch, reason):
     <p style="margin:0 0 18px;font-family:Helvetica,Arial,sans-serif;font-size:13px;color:{INK2};">
       Répondez à ce message avec l'adresse à jour, ou dites simplement <b>STOP</b> pour arrêter.
     </p>
-    <a href="{_esc(watch['url'])}" style="display:inline-block;padding:12px 22px;background:{INK};color:{PAPER};font-family:'Courier New',monospace;font-size:11px;letter-spacing:1px;text-decoration:none;">VOIR LA PAGE</a>
+    {_btn(watch['url'], 'VOIR LA PAGE')}
     """
     return subject, text, email_shell("Relevé interrompu", body)
 
