@@ -41,6 +41,17 @@ Sans `[extract]`, le moteur fonctionne quand même : il retombe sur les
 expressions régulières intégrées. `extruct` améliore la couverture
 (JSON-LD, microdata, OpenGraph normalisés).
 
+### Docker
+
+```bash
+cp .env.example .env      # SMTP_USER / SMTP_PASS
+docker compose up -d --build
+docker compose exec veilleprix python veilleprix.py add "https://exemple.fr/p" --email vous@exemple.fr
+```
+
+Le conteneur relève toutes les 15 minutes et envoie le bordereau à 8 h.
+La base vit dans `./data/veilleprix.db` sur l'hôte — un simple `cp` suffit à la sauvegarder.
+
 ## Usage
 
 ```bash

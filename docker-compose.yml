@@ -1,0 +1,15 @@
+services:
+  veilleprix:
+    build: .
+    container_name: veilleprix
+    restart: unless-stopped
+    volumes:
+      - ./data:/data
+    environment:
+      # Mot de passe d'application Gmail, jamais le mot de passe du compte.
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+    # Ajouter un suivi :
+    #   docker compose exec veilleprix python veilleprix.py add "https://..." --email vous@exemple.fr
